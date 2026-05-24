@@ -4,6 +4,7 @@ import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilte
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -17,6 +18,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig{
 
     @Bean
@@ -31,12 +33,12 @@ public class SecurityConfig{
     @Bean
     public UserDetailsService UserDetailsService(){
 
-        UserDetails user1 = User.withUsername("vijay")
-                .password("{noop}vijay@123")
-                .roles("ADMIN").build();
+        UserDetails user1 = User.withUsername("user")
+                .password("{noop}user@123")
+                .roles("USER").build();
 
-        UserDetails user2 = User.withUsername("sankar")
-                .password("{noop}sankar@123")
+        UserDetails user2 = User.withUsername("admin")
+                .password("{noop}admin@123")
                 .roles("ADMIN").build();
 
         return new InMemoryUserDetailsManager(user1, user2);
