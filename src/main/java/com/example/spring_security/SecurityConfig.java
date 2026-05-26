@@ -1,6 +1,5 @@
 package com.example.spring_security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -10,7 +9,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -20,9 +20,6 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
-    @Autowired
-    DataSource dataSource;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -34,7 +31,6 @@ public class SecurityConfig {
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                //.formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
@@ -43,24 +39,52 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(DataSource dataSource) {
 
-        UserDetails user = User.withDefaultPasswordEncoder()
-                .username("user")
-                .password("1234")
+        UserDetails user = User
+                .withUsername("user")
+                .password(passwordEncoder().encode("1234"))
                 .roles("USER")
                 .build();
 
-        UserDetails admin = User.withDefaultPasswordEncoder()
-                .username("admin")
-                .password("admin123")
+        UserDetails admin = User
+                .withUsername("admin")
+                .password(passwordEncoder().encode("admin123"))
                 .roles("ADMIN")
                 .build();
 
-        JdbcUserDetailsManager userDetailsManager = new JdbcUserDetailsManager(dataSource);
-        userDetailsManager.createUser(user);
-        userDetailsManager.createUser(admin);
+        UserDetails user2 = User
+                .withUsername("user2")
+                .password(passwordEncoder().encode("user2@123"))
+                .roles("USER")
+                .build();
 
+        UserDetails admin2 = User
+                .withUsername("admin2")
+                .password(passwordEncoder().encode("admin2@123"))
+                .roles("ADMIN")
+                .build();
+
+        JdbcUserDetailsManager userDetailsManager =
+                new JdbcUserDetailsManager(dataSource);
+
+        if (userDetailsManager.userExists("user")) {
+            userDetailsManager.updateUser(user);
+        }
+
+        if (userDetailsManager.userExists("admin")) {
+            userDetailsManager.updateUser(admin);
+        }
+
+        if (userDetailsManager.userExists("user2")) {
+            userDetailsManager.updateUser(user2);
+        }
+        if (userDetailsManager.userExists("admin2")) {
+            userDetailsManager.updateUser(admin2);
+        }
         return userDetailsManager;
+    }
 
-        //return InMemoryUserDetailsManager(user, admin);
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
