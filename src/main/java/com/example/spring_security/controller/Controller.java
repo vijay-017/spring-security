@@ -12,14 +12,14 @@ public class Controller {
 	}
 
 	@PreAuthorize("hasRole('USER')")
-	@GetMapping("user")
+	@GetMapping("/user")
 	public String userEndPoint(){
 		return "Hello. user!!!";
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	@GetMapping("admin")
+	@GetMapping("/admin")
 	public String adminEndPoint(){
-		return "Hello. Admin";
+		return "Hello. Admin!!!";
 	}
 }

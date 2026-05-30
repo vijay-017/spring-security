@@ -36,6 +36,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+
     @Bean
     public UserDetailsService userDetailsService(DataSource dataSource) {
 
@@ -66,19 +67,19 @@ public class SecurityConfig {
         JdbcUserDetailsManager userDetailsManager =
                 new JdbcUserDetailsManager(dataSource);
 
-        if (userDetailsManager.userExists("user")) {
-            userDetailsManager.updateUser(user);
+        if (!userDetailsManager.userExists("user")) {
+            userDetailsManager.createUser(user);
         }
 
-        if (userDetailsManager.userExists("admin")) {
-            userDetailsManager.updateUser(admin);
+        if (!userDetailsManager.userExists("admin")) {
+            userDetailsManager.createUser(admin);
         }
 
-        if (userDetailsManager.userExists("user2")) {
-            userDetailsManager.updateUser(user2);
+        if (!userDetailsManager.userExists("user2")) {
+            userDetailsManager.createUser(user2);
         }
-        if (userDetailsManager.userExists("admin2")) {
-            userDetailsManager.updateUser(admin2);
+        if (!userDetailsManager.userExists("admin2")) {
+            userDetailsManager.createUser(admin2);
         }
         return userDetailsManager;
     }
